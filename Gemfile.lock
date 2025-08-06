@@ -367,9 +367,9 @@ GEM
       ostruct
     stringio (3.1.7)
     thor (1.4.0)
-    thruster (0.1.14)
-    thruster (0.1.14-aarch64-linux)
-    thruster (0.1.14-x86_64-linux)
+    thruster (0.1.15)
+    thruster (0.1.15-aarch64-linux)
+    thruster (0.1.15-x86_64-linux)
     timeout (0.4.3)
     types_from_serializers (2.4.0)
       listen (~> 3.2)
