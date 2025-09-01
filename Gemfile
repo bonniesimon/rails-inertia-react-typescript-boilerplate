@@ -67,6 +67,6 @@ group :test do
   gem "shoulda-matchers", "~> 6.0"
 end
 
-gem "inertia_rails", "~> 3.6"
+gem "inertia_rails", "~> 3.11"
 
 gem "vite_rails", "~> 3.0"
