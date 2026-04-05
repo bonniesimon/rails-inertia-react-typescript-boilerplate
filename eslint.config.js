@@ -8,7 +8,13 @@ import prettier from "eslint-config-prettier";
 export default [
   // Global configurations
   {
-    ignores: ["dist/", "node_modules/", "app/frontend/generated/"],
+    ignores: [
+      "dist/",
+      "node_modules/",
+      "app/javascript/generated/",
+      "app/javascript/routes*",
+      "app/javascript/types/serializers/*",
+    ],
   },
 
   // Base configs for all files
@@ -17,7 +23,7 @@ export default [
 
   // React specific configurations for frontend files
   {
-    files: ["app/frontend/**/*.{ts,tsx}"],
+    files: ["app/javascript/**/*.{ts,tsx}"],
     plugins: {
       react,
       "react-hooks": reactHooks,
@@ -33,7 +39,6 @@ export default [
     rules: {
       ...react.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
-      // Your custom rules from siarem
       "react/react-in-jsx-scope": "off",
       "react/prop-types": "off",
     },
@@ -58,7 +63,7 @@ export default [
 
   // Node.js environment for config files
   {
-    files: ["eslint.config.js", "postcss.config.js", "tailwind.config.js", "vite.config.ts"],
+    files: ["eslint.config.js", "vite.config.ts"],
     languageOptions: {
       globals: {
         ...globals.node,

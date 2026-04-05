@@ -4,3 +4,6 @@
 require_relative "config/application"
 
 Rails.application.load_tasks
+
+# Regenerate JS routes before asset compile
+task "assets:precompile" => "js:routes"

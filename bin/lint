@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -e
+
+FIX=""
+if [[ "$1" == "--fix" ]]; then
+  FIX="--fix"
+fi
+
+echo "==> ESLint"
+if [[ -n "$FIX" ]]; then
+  yarn lint:fix
+else
+  yarn lint
+fi
+
+echo "==> Prettier"
+if [[ -n "$FIX" ]]; then
+  yarn format:fix
+else
+  yarn format
+fi
+
+echo "==> RuboCop"
+bundle exec rubocop $FIX

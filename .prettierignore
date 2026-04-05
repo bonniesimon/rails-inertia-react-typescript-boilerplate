@@ -1,0 +1,8 @@
+node_modules/
+public/
+tmp/
+log/
+app/javascript/routes*
+app/javascript/types/serializers/
+app/javascript/generated/
+.env*

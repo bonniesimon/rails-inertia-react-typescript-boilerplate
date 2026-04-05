@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Usage: bin/rename-app <new-app-name>
+# Example: bin/rename-app my-cool-app
+#
+# Renames all occurrences of the current app name across the project.
+# Handles PascalCase, snake_case, kebab-case, and Title Case forms.
+
+if [[ $# -ne 1 ]]; then
+  echo "Usage: bin/rename-app <new-app-name>"
+  echo "  Example: bin/rename-app my-cool-app"
+  exit 1
+fi
+
+NEW_NAME="$1"
+
+if [[ ! "$NEW_NAME" =~ ^[a-zA-Z][a-zA-Z0-9_-]*$ ]]; then
+  echo "Error: app name must start with a letter and contain only letters, numbers, hyphens, or underscores."
+  exit 1
+fi
+
+# ---------------------------------------------------------------------------
+# Current name (all forms — update these if you rename the app again manually)
+# ---------------------------------------------------------------------------
+OLD_PASCAL="RailsInertiaBoilerplateSetup"
+OLD_SNAKE="rails_inertia_boilerplate_setup"
+OLD_KEBAB="rails-inertia-boilerplate-setup"
+OLD_TITLE="Rails Inertia Boilerplate Setup"
+
+# ---------------------------------------------------------------------------
+# Derive new name forms from input
+# ---------------------------------------------------------------------------
+NEW_SNAKE=$(echo "$NEW_NAME" | tr '-' '_' | tr '[:upper:]' '[:lower:]')
+NEW_PASCAL=$(echo "$NEW_SNAKE" | sed 's/_\([a-z]\)/\U\1/g; s/^\([a-z]\)/\U\1/')
+NEW_KEBAB=$(echo "$NEW_SNAKE" | tr '_' '-')
+# Title Case: capitalise first letter of each word
+NEW_TITLE=$(echo "$NEW_SNAKE" | sed 's/_/ /g; s/\b\([a-z]\)/\U\1/g')
+
+echo "Renaming app:"
+echo "  PascalCase : $OLD_PASCAL  →  $NEW_PASCAL"
+echo "  snake_case : $OLD_SNAKE  →  $NEW_SNAKE"
+echo "  kebab-case : $OLD_KEBAB  →  $NEW_KEBAB"
+echo "  Title Case : $OLD_TITLE  →  $NEW_TITLE"
+echo ""
+
+# ---------------------------------------------------------------------------
+# sed helper (BSD/macOS vs GNU)
+# ---------------------------------------------------------------------------
+sed_inplace() {
+  if sed --version 2>&1 | grep -q GNU; then
+    sed -i "$@"
+  else
+    sed -i '' "$@"
+  fi
+}
+
+# ---------------------------------------------------------------------------
+# Find every text file that contains any form of the old name, then replace all
+# ---------------------------------------------------------------------------
+FILES=$(grep -rl \
+  --include="*.rb" --include="*.erb" --include="*.yml" --include="*.yaml" \
+  --include="*.json" --include="*.json.erb" --include="*.ts" --include="*.tsx" \
+  --include="*.js" --include="*.md" --include="*.txt" --include="Dockerfile*" \
+  --include="Procfile*" --include="*.sh" \
+  -e "$OLD_PASCAL" -e "$OLD_SNAKE" -e "$OLD_KEBAB" -e "$OLD_TITLE" \
+  . 2>/dev/null | grep -v "node_modules\|\.git\|tmp/\|log/" || true)
+
+if [[ -z "$FILES" ]]; then
+  echo "No files found containing the current app name. Nothing to do."
+  exit 0
+fi
+
+for FILE in $FILES; do
+  # Apply all four substitutions in order (longest/most-specific first to avoid
+  # partial matches, e.g. replace PascalCase before snake which is a substring)
+  sed_inplace \
+    -e "s/${OLD_TITLE}/${NEW_TITLE}/g" \
+    -e "s/${OLD_PASCAL}/${NEW_PASCAL}/g" \
+    -e "s/${OLD_SNAKE}/${NEW_SNAKE}/g" \
+    -e "s/${OLD_KEBAB}/${NEW_KEBAB}/g" \
+    "$FILE"
+  echo "  updated $FILE"
+done
+
+echo ""
+echo "Done. Next steps:"
+echo "  - Update the OLD_* variables at the top of bin/rename-app to match the new name"
+echo "    so future renames work correctly."
+echo "  - Run: bundle exec rspec to verify nothing broke."
