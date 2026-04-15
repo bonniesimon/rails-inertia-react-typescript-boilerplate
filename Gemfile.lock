@@ -140,7 +140,7 @@ GEM
     hashdiff (1.2.1)
     i18n (1.14.8)
       concurrent-ruby (~> 1.0)
-    inertia_rails (3.10.0)
+    inertia_rails (3.11.0)
       railties (>= 6)
     io-console (0.8.2)
     irb (1.17.0)
@@ -447,7 +447,7 @@ DEPENDENCIES
   dotenv
   factory_bot_rails
   faker
-  inertia_rails (~> 3.6)
+  inertia_rails (~> 3.11)
   js-routes
   kamal
   letter_opener_web
